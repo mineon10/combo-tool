@@ -2,6 +2,8 @@
 
 A web-based interactive tool for visualizing key concepts in combinatorics at the college level.
 
+> **Disclaimer:** This project was built with the assistance of AI. AI tools were used to help generate, refine, and review portions of the code, documentation, and design.
+
 ## Features (Planned)
 
 1. **Permutation Matrices** - Visualize permutations as matrix operations with geometric shuffling
