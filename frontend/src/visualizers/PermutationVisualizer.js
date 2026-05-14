@@ -153,21 +153,27 @@ export function PermutationVisualizer() {
 
   // Initialize with random permutation AND vector on load (and whenever the slider changes size).
   // Skipped when the size change was driven by a user-supplied vector — in that case state is already set.
+  // Uses a cancel flag so rapid slider drags don't race; only the latest effect run commits state.
   useEffect(() => {
     if (skipInitRef.current) {
       skipInitRef.current = false;
       return;
     }
+    let cancelled = false;
+
     const initialize = async () => {
       setLoading(true);
       setError(null);
       try {
         const permResp = await api.getRandomPermutation(size);
+        if (cancelled) return;
+
         const newPerm = permResp.data.permutation;
         const newMatrix = permResp.data.matrix;
-
         const newVector = Array.from({ length: size }, () => Math.floor(Math.random() * 9) + 1);
+
         const applyResp = await api.applyPermutation(newPerm, newVector);
+        if (cancelled) return;
 
         setPermutation(newPerm);
         setMatrix(newMatrix);
@@ -176,12 +182,17 @@ export function PermutationVisualizer() {
         setSelectedCell(null);
         setCustomVectorInput('');
       } catch (err) {
+        if (cancelled) return;
         setError('Failed to initialize: ' + err.message);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     initialize();
+
+    return () => {
+      cancelled = true;
+    };
   }, [size]);
 
   return (
