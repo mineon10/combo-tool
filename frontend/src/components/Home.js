@@ -143,7 +143,7 @@ export function Home() {
                   </div>
                   <h3>{topic.title}</h3>
                   <p>{topic.summary}</p>
-                  <span className="home-nav-meta">{topic.subject} · {topic.category}</span>
+                  <span className="home-nav-meta">{topic.subject} · {topic.categories.join(', ')}</span>
                   {live && <span className="home-nav-cta">Open →</span>}
                 </>
               );

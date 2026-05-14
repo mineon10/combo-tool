@@ -15,12 +15,15 @@
 
 /**
  * @typedef {Object} Topic
- * @property {string} slug      URL-safe id; also the route segment under `/`
- * @property {string} title     Human-readable name shown in cards & headings
- * @property {string} subject   Top-level grouping (e.g., 'Mathematics', 'Physics')
- * @property {string} category  Sub-grouping (e.g., 'Linear Algebra', 'Calculus')
- * @property {string[]} tags    Searchable keywords
- * @property {string} summary   One-sentence pitch shown in cards & search results
+ * @property {string}   slug        URL-safe id; also the route segment under `/`
+ * @property {string}   title       Human-readable name shown in cards & headings
+ * @property {string}   subject     Top-level domain (e.g., 'Mathematics', 'Physics')
+ * @property {string[]} categories  Sub-disciplines this topic belongs to. A topic can
+ *                                  span more than one (e.g., permutations sit in both
+ *                                  'Linear Algebra' and 'Combinatorics'). Used by the
+ *                                  browse page's category filter chips.
+ * @property {string[]} tags        Fine-grained searchable keywords
+ * @property {string}   summary     One-sentence pitch shown in cards & search results
  * @property {'introductory'|'undergraduate'|'graduate'} difficulty
  * @property {'live'|'planned'} [status]  Defaults to 'live'. 'planned' = placeholder, no page yet.
  */
@@ -31,7 +34,7 @@ export const TOPICS = [
     slug: 'permutations',
     title: 'Permutation Matrices',
     subject: 'Mathematics',
-    category: 'Linear Algebra',
+    categories: ['Linear Algebra', 'Combinatorics'],
     tags: ['matrix', 'vector', 'permutation', 'discrete', 'group theory', 'orthogonal'],
     summary:
       'Interactive permutation matrices, row-by-row dot products, and visual element flow.',
@@ -42,7 +45,7 @@ export const TOPICS = [
     slug: 'projections',
     title: 'Projection Matrices',
     subject: 'Mathematics',
-    category: 'Linear Algebra',
+    categories: ['Linear Algebra'],
     tags: ['matrix', 'projection', 'subspace', 'orthogonal', 'least squares'],
     summary:
       'Project vectors onto subspaces and explore the geometry of orthogonal decomposition.',
@@ -53,7 +56,7 @@ export const TOPICS = [
     slug: 'binomial-coefficients',
     title: 'Binomial Coefficients & Pascal’s Triangle',
     subject: 'Mathematics',
-    category: 'Combinatorics',
+    categories: ['Combinatorics'],
     tags: ['combinatorics', 'binomial', 'pascal', 'counting', 'discrete'],
     summary:
       'Visualize how combinations build up Pascal’s triangle and connect to the binomial theorem.',
