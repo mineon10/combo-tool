@@ -3,6 +3,42 @@ import { api } from '../services/api';
 import { MatrixVectorMultiplication } from './MatrixVectorMultiplication';
 import { VectorTransformationVisualizer } from './VectorTransformationVisualizer';
 
+// Local permutation utilities — no backend round-trip needed for resize/swap
+const buildPermMatrix = (perm) => {
+  const n = perm.length;
+  const m = Array.from({ length: n }, () => Array(n).fill(0));
+  for (let i = 0; i < n; i++) m[i][perm[i]] = 1;
+  return m;
+};
+
+const applyPerm = (perm, vec) => perm.map((j) => vec[j]);
+
+// Grow a permutation by appending identity entries.
+const growPermutation = (perm, targetSize) => {
+  const out = [...perm];
+  for (let i = perm.length; i < targetSize; i++) out.push(i);
+  return out;
+};
+
+// Shrink a permutation by repeatedly removing the last position,
+// repairing the matrix so every row & column keeps exactly one 1.
+const shrinkPermutation = (perm, targetSize) => {
+  const out = [...perm];
+  while (out.length > targetSize) {
+    const lastIdx = out.length - 1;
+    const lastVal = out[lastIdx];
+    if (lastVal !== lastIdx) {
+      // The 1 from the row being removed sat at column `lastVal`.
+      // The 1 in column `lastIdx` (also being removed) sat at row `reroute`.
+      // Re-point that row to the orphaned column.
+      const reroute = out.indexOf(lastIdx);
+      out[reroute] = lastVal;
+    }
+    out.pop();
+  }
+  return out;
+};
+
 export function PermutationVisualizer() {
   const [size, setSize] = useState(5);
   const [permutation, setPermutation] = useState([0, 1, 2, 3, 4]);
@@ -14,6 +50,7 @@ export function PermutationVisualizer() {
   const [customVectorInput, setCustomVectorInput] = useState('');
   const [selectedCell, setSelectedCell] = useState(null);
   const skipInitRef = useRef(false);
+  const hasMountedRef = useRef(false);
 
   // Parse vector string input
   const parseVectorInput = (input) => {
@@ -151,48 +188,74 @@ export function PermutationVisualizer() {
     }
   };
 
-  // Initialize with random permutation AND vector on load (and whenever the slider changes size).
-  // Skipped when the size change was driven by a user-supplied vector — in that case state is already set.
-  // Uses a cancel flag so rapid slider drags don't race; only the latest effect run commits state.
+  // Effect on size change.
+  // - First mount: fetch a random permutation from the backend and seed a random vector.
+  // - Later changes from the slider: grow or shrink the existing matrix in place so
+  //   the user keeps the permutation they were studying.
+  // - When the size change was triggered by applyCustomVector, skipInitRef tells us
+  //   state is already set; bail out.
   useEffect(() => {
     if (skipInitRef.current) {
       skipInitRef.current = false;
       return;
     }
-    let cancelled = false;
 
-    const initialize = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const permResp = await api.getRandomPermutation(size);
-        if (cancelled) return;
+    // First mount — async fetch of an initial random permutation
+    if (!hasMountedRef.current) {
+      let cancelled = false;
+      const initialize = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const permResp = await api.getRandomPermutation(size);
+          if (cancelled) return;
+          const newPerm = permResp.data.permutation;
+          const newMatrix = permResp.data.matrix;
+          const newVector = Array.from({ length: size }, () => Math.floor(Math.random() * 9) + 1);
+          const newResult = applyPerm(newPerm, newVector);
+          setPermutation(newPerm);
+          setMatrix(newMatrix);
+          setVector(newVector);
+          setResult(newResult);
+          setSelectedCell(null);
+          setCustomVectorInput('');
+          hasMountedRef.current = true;
+        } catch (err) {
+          if (cancelled) return;
+          setError('Failed to initialize: ' + err.message);
+        } finally {
+          if (!cancelled) setLoading(false);
+        }
+      };
+      initialize();
+      return () => {
+        cancelled = true;
+      };
+    }
 
-        const newPerm = permResp.data.permutation;
-        const newMatrix = permResp.data.matrix;
-        const newVector = Array.from({ length: size }, () => Math.floor(Math.random() * 9) + 1);
+    // Slider change after mount — resize the current matrix/vector locally
+    const oldSize = permutation.length;
+    if (size === oldSize) return;
 
-        const applyResp = await api.applyPermutation(newPerm, newVector);
-        if (cancelled) return;
-
-        setPermutation(newPerm);
-        setMatrix(newMatrix);
-        setVector(newVector);
-        setResult(applyResp.data.result);
-        setSelectedCell(null);
-        setCustomVectorInput('');
-      } catch (err) {
-        if (cancelled) return;
-        setError('Failed to initialize: ' + err.message);
-      } finally {
-        if (!cancelled) setLoading(false);
+    let newPerm;
+    let newVector;
+    if (size > oldSize) {
+      newPerm = growPermutation(permutation, size);
+      newVector = [...vector];
+      for (let i = vector.length; i < size; i++) {
+        newVector.push(Math.floor(Math.random() * 9) + 1);
       }
-    };
-    initialize();
+    } else {
+      newPerm = shrinkPermutation(permutation, size);
+      newVector = vector.slice(0, size);
+    }
 
-    return () => {
-      cancelled = true;
-    };
+    setPermutation(newPerm);
+    setMatrix(buildPermMatrix(newPerm));
+    setVector(newVector);
+    setResult(applyPerm(newPerm, newVector));
+    setSelectedCell(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size]);
 
   return (
