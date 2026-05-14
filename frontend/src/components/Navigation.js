@@ -5,8 +5,15 @@ import { usePathname } from 'next/navigation';
 
 const TABS = [
   { href: '/', label: 'Home' },
-  { href: '/permutations', label: 'Permutations' },
+  { href: '/topics', label: 'Browse' },
 ];
+
+// Browse should stay highlighted on any topic page, not just /topics itself.
+const isActiveTab = (pathname, href) => {
+  if (href === '/') return pathname === '/';
+  if (href === '/topics') return pathname !== '/';
+  return pathname === href;
+};
 
 export function Navigation() {
   const pathname = usePathname();
@@ -32,7 +39,7 @@ export function Navigation() {
           <Link
             key={href}
             href={href}
-            className={pathname === href ? 'active' : ''}
+            className={isActiveTab(pathname, href) ? 'active' : ''}
           >
             {label}
           </Link>
