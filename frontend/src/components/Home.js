@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { TOPICS, topicHref } from '@/topics';
 
 export function Home() {
   return (
@@ -129,13 +130,15 @@ export function Home() {
             <h2 className="home-section-title">Where to Go Next</h2>
           </div>
 
-          <div className="home-nav-grid home-nav-grid--single">
-            <Link className="home-nav-card" href="/permutations">
-              <span className="home-nav-num">01</span>
-              <h3>Permutations</h3>
-              <p>Interactive permutation matrices, row-by-row dot products, and visual element flow.</p>
-              <span className="home-nav-cta">Open →</span>
-            </Link>
+          <div className={`home-nav-grid${TOPICS.length === 1 ? ' home-nav-grid--single' : ''}`}>
+            {TOPICS.map((topic, idx) => (
+              <Link key={topic.slug} className="home-nav-card" href={topicHref(topic)}>
+                <span className="home-nav-num">{String(idx + 1).padStart(2, '0')}</span>
+                <h3>{topic.title}</h3>
+                <p>{topic.summary}</p>
+                <span className="home-nav-cta">Open →</span>
+              </Link>
+            ))}
           </div>
         </section>
 

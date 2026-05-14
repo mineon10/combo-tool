@@ -1,9 +1,11 @@
 import { PermutationVisualizer } from '@/visualizers/PermutationVisualizer';
+import { getTopic } from '@/topics';
+
+const topic = getTopic('permutations');
 
 export const metadata = {
-  title: 'Permutation Matrices · ComboTool',
-  description:
-    'Interactive permutation matrix visualizer — see how rows of P act on a vector and watch each element flow to its new position.',
+  title: `${topic.title} · ComboTool`,
+  description: topic.summary,
 };
 
 export default function PermutationsPage() {
