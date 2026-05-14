@@ -165,7 +165,7 @@ export function PermutationVisualizer() {
   return (
     <div className="visualizer-container">
       <div className="canvas-section">
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'row', minHeight: 0 }}>
+        <div className="equation-area">
           <div className="side-note">
             <div className="side-note-card">
               <h4>
@@ -183,7 +183,7 @@ export function PermutationVisualizer() {
               </div>
             </div>
           </div>
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          <div className="equation-canvas-wrap">
             <MatrixVectorMultiplication
               matrix={matrix}
               vector={vector}
