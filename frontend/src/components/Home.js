@@ -1,6 +1,6 @@
-import React from 'react';
+import Link from 'next/link';
 
-export function Home({ setActiveTab }) {
+export function Home() {
   return (
     <div className="home-page">
       <div className="home-container">
@@ -113,7 +113,7 @@ export function Home({ setActiveTab }) {
               <div className="home-callout">
                 <span className="home-callout-label">Try this</span>
                 <p>
-                  Head to the <button className="home-link" onClick={() => setActiveTab('permutation')}>Permutations</button> tab.
+                  Head to the <Link className="home-link" href="/permutations">Permutations</Link> tab.
                   Click on a <strong>1</strong> in the matrix and watch how its position controls which input element ends up where in the output vector.
                 </p>
               </div>
@@ -130,12 +130,12 @@ export function Home({ setActiveTab }) {
           </div>
 
           <div className="home-nav-grid home-nav-grid--single">
-            <button className="home-nav-card" onClick={() => setActiveTab('permutation')}>
+            <Link className="home-nav-card" href="/permutations">
               <span className="home-nav-num">01</span>
               <h3>Permutations</h3>
               <p>Interactive permutation matrices, row-by-row dot products, and visual element flow.</p>
               <span className="home-nav-cta">Open →</span>
-            </button>
+            </Link>
           </div>
         </section>
 
