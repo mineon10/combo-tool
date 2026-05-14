@@ -17,7 +17,7 @@ export function PermutationVisualizer() {
   // Parse vector string input
   const parseVectorInput = (input) => {
     try {
-      const cleaned = input.replace(/[\[\]]/g, '').trim();
+      const cleaned = input.replace(/[[\]]/g, '').trim();
       const values = cleaned.split(',').map(v => parseFloat(v.trim()));
 
       if (values.length !== size) {

@@ -182,7 +182,6 @@ export function MatrixVectorMultiplication({ matrix, vector, result, permutation
     const resultBoxWidth = cellSize * 0.95;
     const opWidth = cellSize * 0.7;
 
-    const labelFont = `600 ${Math.round(Math.max(10, cellSize * 0.28))}px Inter, sans-serif`;
     const cellNumberFont = `700 ${Math.round(cellSize * 0.4)}px Inter, sans-serif`;
     const termFont = `600 ${Math.round(cellSize * 0.3)}px 'JetBrains Mono', monospace`;
     const opFont = `300 ${Math.round(cellSize * 0.7)}px Inter, sans-serif`;
