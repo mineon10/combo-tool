@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
 import { MatrixVectorMultiplication } from './MatrixVectorMultiplication';
 import { VectorTransformationVisualizer } from './VectorTransformationVisualizer';
@@ -13,6 +13,7 @@ export function PermutationVisualizer() {
   const [error, setError] = useState(null);
   const [customVectorInput, setCustomVectorInput] = useState('');
   const [selectedCell, setSelectedCell] = useState(null);
+  const skipInitRef = useRef(false);
 
   // Parse vector string input
   const parseVectorInput = (input) => {
@@ -20,8 +21,8 @@ export function PermutationVisualizer() {
       const cleaned = input.replace(/[[\]]/g, '').trim();
       const values = cleaned.split(',').map(v => parseFloat(v.trim()));
 
-      if (values.length !== size) {
-        throw new Error(`Must have exactly ${size} elements`);
+      if (values.length < 2 || values.length > 10) {
+        throw new Error('Vector must have between 2 and 10 elements');
       }
       if (values.some(isNaN)) {
         throw new Error('All values must be numbers');
@@ -33,16 +34,32 @@ export function PermutationVisualizer() {
     }
   };
 
-  // Apply custom vector with current permutation
+  // Apply custom vector — vector length drives the matrix size
   const applyCustomVector = async () => {
     setLoading(true);
     setError(null);
     try {
       const customVec = parseVectorInput(customVectorInput);
-      setVector(customVec);
+      const newSize = customVec.length;
 
-      const response = await api.applyPermutation(permutation, customVec);
-      setResult(response.data.result);
+      if (newSize === size) {
+        // Same size — reuse current permutation
+        const response = await api.applyPermutation(permutation, customVec);
+        setVector(customVec);
+        setResult(response.data.result);
+      } else {
+        // Different size — generate a fresh permutation for the new dimension
+        skipInitRef.current = true;
+        const permResp = await api.getRandomPermutation(newSize);
+        const newPerm = permResp.data.permutation;
+        const applyResp = await api.applyPermutation(newPerm, customVec);
+        setPermutation(newPerm);
+        setMatrix(permResp.data.matrix);
+        setVector(customVec);
+        setResult(applyResp.data.result);
+        setSelectedCell(null);
+        setSize(newSize);
+      }
     } catch (err) {
       setError('Error: ' + err.message);
     } finally {
@@ -134,8 +151,13 @@ export function PermutationVisualizer() {
     }
   };
 
-  // Initialize with random permutation AND vector on load (and whenever size changes)
+  // Initialize with random permutation AND vector on load (and whenever the slider changes size).
+  // Skipped when the size change was driven by a user-supplied vector — in that case state is already set.
   useEffect(() => {
+    if (skipInitRef.current) {
+      skipInitRef.current = false;
+      return;
+    }
     const initialize = async () => {
       setLoading(true);
       setError(null);
@@ -241,11 +263,11 @@ export function PermutationVisualizer() {
 
         {/* Custom Vector Input */}
         <div className="control-group">
-          <label htmlFor="vecInput">Input Vector</label>
+          <label htmlFor="vecInput">Input Vector (2–10 elements)</label>
           <input
             id="vecInput"
             type="text"
-            placeholder={`e.g., [${Array.from({length: size}, (_, i) => i).join(', ')}]`}
+            placeholder="e.g., [3, 7, 1, 5, 9]"
             value={customVectorInput}
             onChange={(e) => setCustomVectorInput(e.target.value)}
             style={{ marginBottom: '0.5rem' }}
