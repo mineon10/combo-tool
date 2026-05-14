@@ -365,7 +365,7 @@ export function MatrixVectorMultiplication({ matrix, vector, result, permutation
       ref={canvasRef}
       onClick={handleClick}
       onMouseMove={handleMouseMove}
-      style={{ width: '100%', flex: 1, display: 'block' }}
+      style={{ width: '100%', height: '100%', flex: '1 1 0', display: 'block' }}
     />
   );
 }

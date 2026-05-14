@@ -899,14 +899,16 @@ button:disabled {
   }
   .equation-area {
     flex: 0 0 auto;
-    min-height: 380px;
+    height: 300px;
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
   }
   .equation-canvas-wrap {
     min-width: 720px;
-    flex: 0 0 auto;
+    width: 720px;
+    flex: 0 0 720px;
+    height: 100%;
   }
   .vt-wrapper {
     flex: 0 0 auto;
