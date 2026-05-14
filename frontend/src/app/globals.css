@@ -405,6 +405,61 @@ button:disabled {
   font-size: 0.85rem;
 }
 
+/* ============== Page Loader ============== */
+.page-loader {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+  background: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.06) 0%, transparent 60%);
+}
+
+.page-loader-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(99, 102, 241, 0.18);
+  border-top-color: var(--accent-bright);
+  border-radius: 50%;
+  animation: page-loader-spin 0.85s linear infinite;
+}
+
+@keyframes page-loader-spin {
+  to { transform: rotate(360deg); }
+}
+
+.page-loader-message {
+  margin: 0.4rem 0 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.005em;
+}
+
+.page-loader-hint {
+  margin: 0;
+  max-width: 380px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.page-loader-hint.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-loader-hint strong {
+  color: var(--accent-bright);
+  font-weight: 600;
+}
+
 /* ============== Equation Area ============== */
 .equation-area {
   flex: 1;

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
 import { MatrixVectorMultiplication } from './MatrixVectorMultiplication';
 import { VectorTransformationVisualizer } from './VectorTransformationVisualizer';
+import { PageLoader } from '../components/PageLoader';
 
 // Local permutation utilities — no backend round-trip needed for resize/swap
 const buildPermMatrix = (perm) => {
@@ -260,49 +261,67 @@ export function PermutationVisualizer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size]);
 
+  // Initial cold-start: backend may have spun down. Show a loader instead of an
+  // empty canvas so users know something is happening and don't bounce.
+  const isInitialLoading = loading && !matrix;
+
   return (
     <div className="visualizer-container">
       <div className="canvas-section">
-        <div className="equation-area">
-          <div className="side-note">
-            <div className="side-note-card">
-              <h4>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-                  <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-                How to read this
-              </h4>
-              <p>
-                The <strong>row</strong> of the permutation matrix represents the spot in the output vector. The <strong>column</strong> of the <strong>1</strong> in that row represents the element from the input vector placed in that spot.
-              </p>
-              <div className="side-note-hint">
-                Click a <strong>1</strong> to select it, then click another column to move it there.
+        {isInitialLoading ? (
+          <PageLoader
+            message="Loading the permutation visualizer…"
+            hint={
+              <>
+                First visit can take up to <strong>~30 seconds</strong> while the
+                server wakes from sleep. It’ll be instant after that.
+              </>
+            }
+          />
+        ) : (
+          <>
+            <div className="equation-area">
+              <div className="side-note">
+                <div className="side-note-card">
+                  <h4>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+                      <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                    How to read this
+                  </h4>
+                  <p>
+                    The <strong>row</strong> of the permutation matrix represents the spot in the output vector. The <strong>column</strong> of the <strong>1</strong> in that row represents the element from the input vector placed in that spot.
+                  </p>
+                  <div className="side-note-hint">
+                    Click a <strong>1</strong> to select it, then click another column to move it there.
+                  </div>
+                </div>
+              </div>
+              <div
+                className="equation-canvas-wrap"
+                style={{ '--eq-min-width': `${Math.max(720, 95 * permutation.length)}px` }}
+              >
+                <MatrixVectorMultiplication
+                  matrix={matrix}
+                  vector={vector}
+                  result={result}
+                  permutation={permutation}
+                  selectedCell={selectedCell}
+                  onCellClick={handleCellClick}
+                />
               </div>
             </div>
-          </div>
-          <div
-            className="equation-canvas-wrap"
-            style={{ '--eq-min-width': `${Math.max(720, 95 * permutation.length)}px` }}
-          >
-            <MatrixVectorMultiplication
-              matrix={matrix}
-              vector={vector}
-              result={result}
-              permutation={permutation}
-              selectedCell={selectedCell}
-              onCellClick={handleCellClick}
-            />
-          </div>
-        </div>
-        {vector && result && (
-          <div className="vt-wrapper">
-            <VectorTransformationVisualizer
-              vector={vector}
-              result={result}
-              permutation={permutation}
-            />
-          </div>
+            {vector && result && (
+              <div className="vt-wrapper">
+                <VectorTransformationVisualizer
+                  vector={vector}
+                  result={result}
+                  permutation={permutation}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
 
