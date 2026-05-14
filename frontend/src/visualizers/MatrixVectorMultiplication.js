@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useRef } from 'react';
 
 // Vibrant, harmonized element colors (tailwind-style 500/400 shades)
