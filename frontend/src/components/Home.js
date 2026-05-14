@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { TOPICS, topicHref } from '@/topics';
+import { TOPICS, topicHref, isLive } from '@/topics';
 
 export function Home() {
   return (
@@ -131,14 +131,37 @@ export function Home() {
           </div>
 
           <div className={`home-nav-grid${TOPICS.length === 1 ? ' home-nav-grid--single' : ''}`}>
-            {TOPICS.map((topic, idx) => (
-              <Link key={topic.slug} className="home-nav-card" href={topicHref(topic)}>
-                <span className="home-nav-num">{String(idx + 1).padStart(2, '0')}</span>
-                <h3>{topic.title}</h3>
-                <p>{topic.summary}</p>
-                <span className="home-nav-cta">Open →</span>
-              </Link>
-            ))}
+            {TOPICS.map((topic, idx) => {
+              const num = String(idx + 1).padStart(2, '0');
+              const live = isLive(topic);
+
+              const inner = (
+                <>
+                  <div className="home-nav-card-head">
+                    <span className="home-nav-num">{num}</span>
+                    {!live && <span className="home-nav-badge">Coming Soon</span>}
+                  </div>
+                  <h3>{topic.title}</h3>
+                  <p>{topic.summary}</p>
+                  <span className="home-nav-meta">{topic.subject} · {topic.category}</span>
+                  {live && <span className="home-nav-cta">Open →</span>}
+                </>
+              );
+
+              return live ? (
+                <Link key={topic.slug} className="home-nav-card" href={topicHref(topic)}>
+                  {inner}
+                </Link>
+              ) : (
+                <div
+                  key={topic.slug}
+                  className="home-nav-card home-nav-card--planned"
+                  aria-disabled="true"
+                >
+                  {inner}
+                </div>
+              );
+            })}
           </div>
         </section>
 
