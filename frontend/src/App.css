@@ -905,9 +905,9 @@ button:disabled {
     -webkit-overflow-scrolling: touch;
   }
   .equation-canvas-wrap {
-    min-width: 720px;
-    width: 720px;
-    flex: 0 0 720px;
+    min-width: var(--eq-min-width, 720px);
+    width: var(--eq-min-width, 720px);
+    flex: 0 0 var(--eq-min-width, 720px);
     height: 100%;
   }
   .vt-wrapper {

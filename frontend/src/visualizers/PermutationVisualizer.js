@@ -183,7 +183,10 @@ export function PermutationVisualizer() {
               </div>
             </div>
           </div>
-          <div className="equation-canvas-wrap">
+          <div
+            className="equation-canvas-wrap"
+            style={{ '--eq-min-width': `${Math.max(720, 95 * permutation.length)}px` }}
+          >
             <MatrixVectorMultiplication
               matrix={matrix}
               vector={vector}
