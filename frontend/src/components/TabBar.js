@@ -13,27 +13,27 @@ export function TabBar() {
 
   return (
     <div className="tab-bar" role="tablist" aria-label="Open topic tabs">
-      {openTabs.map((topic) => {
-        const href = topicHref(topic);
+      {openTabs.map((tab) => {
+        const href = topicHref(tab);
         const active = pathname === href;
         return (
           <div
-            key={topic.slug}
+            key={tab.id}
             className={`tab-item${active ? ' tab-item--active' : ''}`}
             role="tab"
             aria-selected={active}
           >
             <Link href={href} className="tab-link">
-              {topic.title}
+              {tab.title}
             </Link>
             <button
               type="button"
               className="tab-close"
               onClick={(e) => {
                 e.stopPropagation();
-                closeTab(topic.slug);
+                closeTab(tab.id);
               }}
-              aria-label={`Close ${topic.title}`}
+              aria-label={`Close ${tab.title}`}
               title="Close tab"
             >
               <svg width="10" height="10" viewBox="0 0 14 14" aria-hidden="true">
