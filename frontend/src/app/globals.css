@@ -152,13 +152,14 @@ body {
   display: flex;
   align-items: stretch;
   gap: 0.25rem;
-  padding: 0.4rem 0.75rem 0;
+  padding: 0.3rem 0.75rem 0;
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 100%);
   border-bottom: 1px solid var(--border);
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
+  flex: 0 0 auto;
 }
 
 .tab-bar::-webkit-scrollbar {
@@ -180,7 +181,7 @@ body {
   border-bottom: none;
   border-radius: 8px 8px 0 0;
   padding: 0 0.4rem 0 0.85rem;
-  height: 34px;
+  height: 30px;
   flex: 0 0 auto;
   transition: background 0.15s ease, border-color 0.15s ease;
   position: relative;
@@ -264,8 +265,24 @@ body {
   display: flex;
   flex-direction: column;
   background: radial-gradient(ellipse at top left, #1e1b4b 0%, #0b1120 70%);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   min-width: 0;
+  min-height: 0;
+}
+
+.canvas-section::-webkit-scrollbar {
+  width: 8px;
+}
+.canvas-section::-webkit-scrollbar-track {
+  background: transparent;
+}
+.canvas-section::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+.canvas-section::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
 }
 
 .controls-section {
