@@ -1,6 +1,6 @@
 """
 ComboTool Backend API
-Main Flask application for combinatorics computations
+Flask application serving combinatorics computations for the frontend.
 """
 from flask import Flask, jsonify, request
 from flask_cors import CORS
