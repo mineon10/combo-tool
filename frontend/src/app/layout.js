@@ -1,6 +1,8 @@
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Navigation } from '@/components/Navigation';
+import { TabsProvider } from '@/components/TabsProvider';
+import { TabBar } from '@/components/TabBar';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -26,10 +28,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body>
-        <div className="app">
-          <Navigation />
-          <div className="content">{children}</div>
-        </div>
+        <TabsProvider>
+          <div className="app">
+            <Navigation />
+            <TabBar />
+            <div className="content">{children}</div>
+          </div>
+        </TabsProvider>
       </body>
     </html>
   );

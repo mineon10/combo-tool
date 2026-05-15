@@ -8,12 +8,9 @@ const TABS = [
   { href: '/topics', label: 'Browse' },
 ];
 
-// Browse should stay highlighted on any topic page, not just /topics itself.
-const isActiveTab = (pathname, href) => {
-  if (href === '/') return pathname === '/';
-  if (href === '/topics') return pathname !== '/';
-  return pathname === href;
-};
+// Exact-match: the tab bar below the navbar owns topic-level active state,
+// so Browse here should only highlight on /topics itself.
+const isActiveTab = (pathname, href) => pathname === href;
 
 export function Navigation() {
   const pathname = usePathname();
