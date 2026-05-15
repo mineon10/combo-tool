@@ -71,7 +71,7 @@ export function TopicsBrowser() {
       <div className="topics-container">
         <header className="topics-header">
           <div className="home-eyebrow">Browse Topics</div>
-          <h1 className="topics-title">All Visualizations</h1>
+          <h1 className="topics-title">Select a Visualization</h1>
           <p className="topics-subtitle">
             Search by name, tag, or category. {TOPICS.length} topics available
             ({TOPICS.filter((t) => t.status !== 'planned').length} live).
