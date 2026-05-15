@@ -13,6 +13,10 @@ import { TOPICS, getTopic, topicHref } from '@/topics';
 
 const STORAGE_KEY = 'combotool.openTabs';
 
+// sessionStorage (not localStorage): tabs persist across reloads and
+// in-session navigation, but a fresh visit starts with no tabs open.
+const tabStore = typeof window !== 'undefined' ? window.sessionStorage : null;
+
 const TabsContext = createContext({
   openTabs: [],
   closeTab: () => {},
@@ -23,7 +27,8 @@ const TabsContext = createContext({
  * Tracks which topic pages the user currently has "open" — like browser tabs.
  *
  *   • A topic is auto-added when the user lands on `/<slug>`
- *   • The set is persisted to localStorage and restored on next visit
+ *   • The set is persisted to sessionStorage so reloads keep state but a
+ *     fresh browser session starts with no tabs open
  *   • Closing a tab removes it; closing the active tab navigates to the
  *     next remaining tab (or `/topics` if none are left)
  */
@@ -33,10 +38,10 @@ export function TabsProvider({ children }) {
   const [openSlugs, setOpenSlugs] = useState([]);
   const [hydrated, setHydrated] = useState(false);
 
-  // Restore from localStorage on mount
+  // Restore from sessionStorage on mount
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = tabStore?.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
@@ -55,7 +60,7 @@ export function TabsProvider({ children }) {
   useEffect(() => {
     if (!hydrated) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(openSlugs));
+      tabStore?.setItem(STORAGE_KEY, JSON.stringify(openSlugs));
     } catch {
       // ignore quota errors
     }
