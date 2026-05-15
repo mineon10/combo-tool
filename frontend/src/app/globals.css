@@ -587,7 +587,8 @@ button:disabled {
   flex: 1;
   display: flex;
   flex-direction: row;
-  min-height: 0;
+  /* Intentionally no min-height: 0 — the row must grow to fit the
+     side-note card, otherwise it spills into vt-wrapper. */
 }
 
 .equation-canvas-wrap {
@@ -607,7 +608,6 @@ button:disabled {
   padding: 1.25rem 1rem;
   background: linear-gradient(180deg, rgba(99, 102, 241, 0.05), rgba(0, 0, 0, 0));
   border-right: 1px solid var(--border);
-  min-height: 0;
 }
 
 .side-note-card {
@@ -1404,16 +1404,20 @@ button:disabled {
   }
   .equation-area {
     flex: 0 0 auto;
+    flex-direction: column;
+    overflow: visible;
+  }
+  .equation-canvas-wrap {
+    width: 100%;
     height: 300px;
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
+    min-width: 0;
+    flex: 0 0 auto;
   }
-  .equation-canvas-wrap {
+  .equation-canvas-wrap > canvas {
     min-width: var(--eq-min-width, 720px);
-    width: var(--eq-min-width, 720px);
-    flex: 0 0 var(--eq-min-width, 720px);
-    height: 100%;
   }
   .vt-wrapper {
     flex: 0 0 auto;
@@ -1425,7 +1429,12 @@ button:disabled {
     border-top: 1px solid var(--border);
   }
   .side-note {
-    display: none;
+    width: auto;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0.85rem 1rem;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
   }
 }
 
