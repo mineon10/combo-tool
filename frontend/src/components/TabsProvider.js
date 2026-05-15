@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { TOPICS, getTopic, topicHref } from '@/topics';
+import { TOPICS, getTopic, topicHref, tabHref } from '@/topics';
 
 const STORAGE_KEY = 'combotool.openTabs';
 
@@ -21,6 +21,7 @@ const TabsContext = createContext({
   openTabs: [],
   closeTab: () => {},
   closeAll: () => {},
+  openOrFocus: () => '',
 });
 
 // Short, URL-safe random identifier for a tab instance.
@@ -78,20 +79,36 @@ export function TabsProvider({ children }) {
     }
   }, [tabs, hydrated]);
 
-  // Auto-add the current page if it's a topic route. Single-instance for now —
-  // path-based multi-instance routing lands in a follow-up step.
+  // Auto-register a tab when the user is on an instance URL (slug + id). The
+  // bare /<slug> URL is handled by its own redirector page, not here.
   useEffect(() => {
     if (!pathname) return;
-    const m = pathname.match(/^\/([^/]+)\/?$/);
+    const m = pathname.match(/^\/([^/]+)\/([^/]+)\/?$/);
     if (!m) return;
     const slug = m[1];
-    if (slug === 'topics') return;
+    const instanceId = m[2];
     if (!getTopic(slug)) return;
     setTabs((prev) => {
-      if (prev.some((t) => t.slug === slug)) return prev;
-      return [...prev, { id: generateTabId(), slug }];
+      if (prev.some((t) => t.id === instanceId)) return prev;
+      return [...prev, { id: instanceId, slug }];
     });
   }, [pathname]);
+
+  // Find an existing tab for this slug and return its id, or create a new one
+  // and return the new id. Called by the bare /<slug> redirector page.
+  const openOrFocus = useCallback((slug) => {
+    const existing = tabs.find((t) => t.slug === slug);
+    if (existing) return existing.id;
+    const newId = generateTabId();
+    setTabs((prev) => {
+      // Race-safe: another effect may have added the same slug between read
+      // and write; preserve the first one.
+      const already = prev.find((t) => t.slug === slug);
+      if (already) return prev;
+      return [...prev, { id: newId, slug }];
+    });
+    return newId;
+  }, [tabs]);
 
   const closeTab = useCallback(
     (id) => {
@@ -100,9 +117,9 @@ export function TabsProvider({ children }) {
         if (!closing) return prev;
         const next = prev.filter((t) => t.id !== id);
         // If we're closing the currently-active tab, navigate elsewhere.
-        if (pathname === `/${closing.slug}`) {
+        if (pathname === tabHref(closing)) {
           const fallback =
-            next.length > 0 ? `/${next[next.length - 1].slug}` : '/topics';
+            next.length > 0 ? tabHref(next[next.length - 1]) : '/topics';
           queueMicrotask(() => router.push(fallback));
         }
         return next;
@@ -132,12 +149,12 @@ export function TabsProvider({ children }) {
   );
 
   const value = useMemo(
-    () => ({ openTabs, closeTab, closeAll, hydrated }),
-    [openTabs, closeTab, closeAll, hydrated]
+    () => ({ openTabs, closeTab, closeAll, openOrFocus, hydrated }),
+    [openTabs, closeTab, closeAll, openOrFocus, hydrated]
   );
 
   return <TabsContext.Provider value={value}>{children}</TabsContext.Provider>;
 }
 
 export const useTabs = () => useContext(TabsContext);
-export { topicHref };
+export { topicHref, tabHref };

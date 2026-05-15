@@ -73,3 +73,6 @@ export const getTopic = (slug) => TOPICS.find((t) => t.slug === slug);
 
 /** Resolve the URL path for a topic. */
 export const topicHref = (topic) => `/${topic.slug}`;
+
+/** Resolve the URL path for a specific open tab (topic instance). */
+export const tabHref = (tab) => `/${tab.slug}/${tab.id}`;

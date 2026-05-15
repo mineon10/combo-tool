@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useTabs, topicHref } from './TabsProvider';
+import { useTabs, tabHref } from './TabsProvider';
 
 export function TabBar() {
   const { openTabs, closeTab, hydrated } = useTabs();
@@ -14,7 +14,7 @@ export function TabBar() {
   return (
     <div className="tab-bar" role="tablist" aria-label="Open topic tabs">
       {openTabs.map((tab) => {
-        const href = topicHref(tab);
+        const href = tabHref(tab);
         const active = pathname === href;
         return (
           <div
