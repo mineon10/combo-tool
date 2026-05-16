@@ -261,6 +261,32 @@ body {
   box-shadow: none;
 }
 
+.tab-bar-close-all {
+  align-self: center;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.55rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+.tab-bar-close-all:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  transform: none;
+  box-shadow: none;
+}
+
 /* ============== Visualizer Container ============== */
 .visualizer-container {
   flex: 1;

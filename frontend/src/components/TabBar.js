@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useTabs, tabHref } from './TabsProvider';
 
 export function TabBar() {
-  const { openTabs, closeTab, openNew, hydrated } = useTabs();
+  const { openTabs, closeTab, openNew, closeAll, hydrated } = useTabs();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -85,6 +85,17 @@ export function TabBar() {
           </div>
         );
       })}
+      {openTabs.length >= 2 && (
+        <button
+          type="button"
+          className="tab-bar-close-all"
+          onClick={closeAll}
+          aria-label="Close all tabs"
+          title="Close all tabs"
+        >
+          Close all
+        </button>
+      )}
     </div>
   );
 }
