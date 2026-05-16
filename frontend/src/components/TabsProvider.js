@@ -22,6 +22,7 @@ const TabsContext = createContext({
   closeTab: () => {},
   closeAll: () => {},
   openOrFocus: () => '',
+  openNew: () => '',
 });
 
 // Short, URL-safe random identifier for a tab instance.
@@ -110,6 +111,15 @@ export function TabsProvider({ children }) {
     return newId;
   }, [tabs]);
 
+  // Always create a new tab for this slug, even if another tab for the same
+  // topic is already open. Used by the per-tab "duplicate" action.
+  const openNew = useCallback((slug) => {
+    if (!getTopic(slug)) return null;
+    const newId = generateTabId();
+    setTabs((prev) => [...prev, { id: newId, slug }]);
+    return newId;
+  }, []);
+
   const closeTab = useCallback(
     (id) => {
       setTabs((prev) => {
@@ -149,8 +159,8 @@ export function TabsProvider({ children }) {
   );
 
   const value = useMemo(
-    () => ({ openTabs, closeTab, closeAll, openOrFocus, hydrated }),
-    [openTabs, closeTab, closeAll, openOrFocus, hydrated]
+    () => ({ openTabs, closeTab, closeAll, openOrFocus, openNew, hydrated }),
+    [openTabs, closeTab, closeAll, openOrFocus, openNew, hydrated]
   );
 
   return <TabsContext.Provider value={value}>{children}</TabsContext.Provider>;
